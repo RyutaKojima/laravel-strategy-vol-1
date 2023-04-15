@@ -1,0 +1,19 @@
+POST {{scheme}}{{host}}/api/customers
+Content-Type: application/json
+Accept: application/json
+
+{
+  "last_name": "山田",
+  "first_name": "太郎",
+  "emails": [
+    "test@gmail.com",
+    "test@gmail.com",
+    "example@gmail.com"
+  ],
+  "phone_numbers": [
+    {
+      "is_using_send_sms": true,
+      "number": "09011112222"
+    }
+  ]
+}

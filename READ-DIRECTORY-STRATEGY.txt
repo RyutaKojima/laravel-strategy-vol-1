@@ -1,0 +1,102 @@
+# ディレクトリ構成 ( [*]はLaravel標準のもの )
+
+app
+    + [*] Casts
+    + [*] GraphQL
+        + [*] Mutations     GraphQL(更新系に当たるコントローラ)
+        + [*] Queries       GraphQL(参照系に当たるコントローラ)
+        + [*] Validators
+    + [*] Http
+        + [*] Controllers   RestAPIコントローラ
+        + [*] Middleware    ミドルウェア(ルーティング単位での共通処理)
+        + [*] Requests      RestAPIリクエスト定義
+        + [*] Resources     RestAPIレスポンス定義
+    + [*] Models
+        + ...               各テーブルに紐づくEloquentモデル
+    + [*] Console           バッチ処理artisanコマンド
+    + [*] Jobs              Event->Listeners->Jobs
+    + [*] Listeners         Event->Listeners->Jobs
+    + [*] Events            Event->Listeners->Jobs
+    + [*] Notifications     メール/SMS/etcの通知内容・通知先定義
+    + [*] Exceptions
+    + UseCases
+        (+ 必要であれば、認証アクター毎)
+            + {ドメイン毎}
+                + ***UseCase.php
+                + ***Parameter.php
+    + Domains
+        (+ 必要であれば、認証アクター毎)
+            + {ドメイン毎}
+                + ValueObjects
+                + Enums
+    + Repositories
+        (+ 必要であれば、認証アクター毎)
+            + Commands          更新系(Create, Update, Delete), 外部APIへのデータ保存も含む
+            + Queries           取得系(Get), 外部APIからのデータ取得も含む
+                + Get系はほぼAPIと1:1のオーダーメイドになるので
+
+########################################################################################################################
+# 利用イメージ
+
+[GraphQL.Mutations]-\     ▽----------|
+[GraphQL.Queries  ]---> [UseCases    ]--------> [Models]
+[Http.Controllers ]-/    |-[Parameter] \--------\--> [Domains.*.ValueObjects]
+ |-[Http.Requests]                      \--------\--> [Domains.*.Enums]
+ |-[Http.Resources]                      \-> [Repositories.Commands], [Queries]
+
+# 実装イメージ
+
+app
+    + [*] Casts
+    + [*] GraphQL
+        + [*] Mutations
+        + [*] Queries
+        + [*] Validators
+    + [*] Http
+        + [*] Controllers
+            + CreateCustomerController
+            + UpdateCustomerController
+        + [*] Middleware
+        + [*] Requests
+            + CreateCustomerRequest
+            + UpdateCustomerRequest
+        + [*] Resources
+            + CreateCustomerResource
+            + UpdateCustomerResource
+    + [*] Models
+        + Customer
+        + CustomerEmail
+        + CustomerPhoneNumber
+    + [*] Console
+    + [*] Jobs
+    + [*] Listeners
+    + [*] Events
+    + [*] Notifications
+    + [*] Exceptions
+    + UseCases
+        + Customer
+            + CreateCustomer
+                + CreateCustomerUseCase.php
+                + CreateCustomerParameter.php
+                    + Parameters
+                        + PhoneNumberStruct.php
+            + UpdateCustomer
+                + UpdateCustomerUseCase.php
+                + UpdateCustomerParameter.php
+            + UpdateCustomerName
+                + UpdateCustomerNameUseCase.php
+                + UpdateCustomerNameParameter.php
+            + CustomerChangeLog  ......................変更履歴
+                + CustomerChangeLogUseCase.php
+                + CustomerChangeLogParameter.php
+    + Domains
+        + ValueObjects
+            + BirthDay.php
+            + EmailAddress.php
+            + PhoneNumber.php
+        + Enums
+    + Repositories
+        + Commands
+        + Queries
+
+

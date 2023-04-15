@@ -17,3 +17,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::group([], static function () {
+    Route::post('customers', \App\Http\Controllers\CreateCustomerController::class);
+});
