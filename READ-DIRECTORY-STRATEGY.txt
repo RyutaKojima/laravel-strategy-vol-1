@@ -31,9 +31,10 @@ app
                 + Enums
     + Repositories
         (+ 必要であれば、認証アクター毎)
-            + Commands          更新系(Create, Update, Delete), 外部APIへのデータ保存も含む
-            + Queries           取得系(Get), 外部APIからのデータ取得も含む
-                + Get系はほぼAPIと1:1のオーダーメイドになるので
+            + {ドメイン毎(Model毎?)}
+                + Commands          更新系(Create, Update, Delete), 外部APIへのデータ保存も含む
+                + Queries           取得系(Get), 外部APIからのデータ取得も含む
+                    + Get系はほぼAPIと1:1のオーダーメイドになるので
 
 ########################################################################################################################
 # 利用イメージ
@@ -44,7 +45,31 @@ app
  |-[Http.Requests]                      \--------\--> [Domains.*.Enums]
  |-[Http.Resources]                      \-> [Repositories.Commands], [Queries]
 
-# 実装イメージ
+- UseCases
+    - UseCases は単一集約に対する処理を行います
+  ◯: EloquentModel, CollectionなどLaravelの機能を利用（依存）出来ます。
+      また、他のUseCases も利用可能ですが、極力避けましょう。
+  ×: GraphQL, Controllers, Requests, Resources に依存しては**いけません**
+
+- Repositories
+    - Repositories は更新系の Commands と 取得のみの Queries に別れます。
+      必要な場合は、Interfaceを用意しDIで差し替えを可能にします。
+    - Commands
+        - 基本的にはデータベースなどへの永続化を行います。
+          1ファイルにCreate, Update, Deleteを含めても良いと思いますが、クラス大きくなる場合は分割を検討してください。
+          外部のAPIへの更新呼び出しもCommandで行います。
+    - Queries
+        - 基本的にはデータベースからの取得を行います。
+          取得のSQLは使いまわしが出来づらくファイルが大きくなりやすいため、基本的に1クラスに1メソッドにします。
+          外部APIからのデータ取得もQueriesで行います。
+
+- Models
+    - =EloquentModelです。
+      単一モデルで解決するロジックや、Eloquent用の処理を書きます。
+      複数モデルを参照する必要のあるロジックはUseCasesで実装することを検討してください。
+
+########################################################################################################################
+# 実装例
 
 app
     + [*] Casts
@@ -96,7 +121,11 @@ app
             + PhoneNumber.php
         + Enums
     + Repositories
-        + Commands
-        + Queries
-
-
+        + Customer
+            + CustomerCommand.php
+            + Commands
+                + UpdateCustomerCommand.php
+            + Queries
+                GetCustomerQuery.php
+                GetCustomerPaginateQuery.php
+                GetCustomerListOfFriendsQuery.php
