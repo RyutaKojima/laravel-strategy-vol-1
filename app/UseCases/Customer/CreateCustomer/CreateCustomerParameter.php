@@ -22,7 +22,7 @@ final class CreateCustomerParameter
     public function __construct(array $validated)
     {
         $this->lastName = data_get($validated, 'last_name');
-        $this->firstName = data_get($validated, 'first_name');
+        $this->firstName = data_get($validated, 'first_name', '');
 
         $this->emails = collect(data_get($validated, 'emails', []));
 
