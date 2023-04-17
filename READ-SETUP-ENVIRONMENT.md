@@ -21,6 +21,10 @@ docker run --rm \
 ./vendor/bin/sail up -d
 ```
 
+```shell
+./vendor/bin/sail artisan key:generate
+```
+
 マイグレーション実行
 ```shell
 ./vendor/bin/sail artisan migrate
