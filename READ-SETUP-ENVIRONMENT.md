@@ -5,19 +5,30 @@
 cp .env.example .env
 ```
 
+composerインストール
+https://laravel.com/docs/10.x/sail#installing-composer-dependencies-for-existing-projects
+```shell
+docker run --rm \
+    -u "$(id -u):$(id -g)" \
+    -v "$(pwd):/var/www/html" \
+    -w /var/www/html \
+    laravelsail/php82-composer:latest \
+    composer install --ignore-platform-reqs
+```
+
 コンテナをビルド&バックグラウンドで立ち上げます
 ```shell
 ./vendor/bin/sail up -d
 ```
 
-composerパッケージをインストール
-```shell
-./vendor/bin/sail composer install
-```
-
 マイグレーション実行
 ```shell
 ./vendor/bin/sail artisan migrate
+```
+
+ide-helperファイルを作成
+```shell
+./vendor/bin/sail composer ide-helper
 ```
 
 
